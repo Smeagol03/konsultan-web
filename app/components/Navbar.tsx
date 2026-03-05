@@ -33,10 +33,10 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-500 border-b border-black/5 ${
+      className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
         scrolled
-          ? "py-3 sm:py-4 bg-white/80 backdrop-blur-xl"
-          : "py-4 sm:py-8 bg-transparent"
+          ? "py-3 sm:py-4 bg-white/80 backdrop-blur-xl border-black/5 text-black"
+          : "py-4 sm:py-8 bg-transparent border-white/10 text-white"
       }`}
     >
       <div className="max-w-[1400px] mx-auto px-5 sm:px-6 flex justify-between items-center">
@@ -45,8 +45,12 @@ export default function Navbar() {
           href="#beranda"
           className="flex items-center gap-2 group cursor-pointer z-50"
         >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 border-2 border-black flex items-center justify-center group-hover:bg-black transition-colors duration-300">
-            <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black group-hover:text-white group-hover:scale-75 transition-all" />
+          <div
+            className={`w-7 h-7 sm:w-8 sm:h-8 border-2 flex items-center justify-center transition-colors duration-300 group-hover:bg-current ${scrolled ? "border-black" : "border-white"}`}
+          >
+            <Square
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:text-current group-hover:invert-[1] transition-all`}
+            />
           </div>
           <span className="font-black text-lg sm:text-xl tracking-tighter uppercase leading-none">
             Studio<span className="font-light opacity-50">Bina</span>

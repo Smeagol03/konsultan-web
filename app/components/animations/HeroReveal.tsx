@@ -2,41 +2,50 @@
 
 import {
   useRef,
-  useEffect,
+  useLayoutEffect,
   createContext,
   useContext,
+  useCallback,
   type ReactNode,
 } from "react";
 import gsap from "gsap";
 
-// ─── Context ───────────────────────────────────────────────
+// ─── Types ──────────────────────────────────────────────────
+
+interface SlotEntry {
+  el: HTMLElement;
+  order: number;
+  from: gsap.TweenVars;
+}
 
 interface HeroRevealContextValue {
-  registerSlot: (el: HTMLElement, order: number) => void;
+  registerSlot: (el: HTMLElement, order: number, from: gsap.TweenVars) => void;
 }
 
 const HeroRevealContext = createContext<HeroRevealContextValue | null>(null);
 
 // ─── Slot Component ────────────────────────────────────────
 
-function Slot({
-  children,
-  className,
-  order,
-  from,
-}: {
+interface SlotProps {
   children: ReactNode;
   className?: string;
   order: number;
+  /** GSAP 'from' vars — these are now actually passed to the timeline */
   from?: gsap.TweenVars;
-}) {
+}
+
+function Slot({ children, className, order, from = {} }: SlotProps) {
   const ref = useRef<HTMLDivElement>(null);
   const ctx = useContext(HeroRevealContext);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (ref.current && ctx) {
-      ctx.registerSlot(ref.current, order);
+      // Hide immediately to prevent FOUC before timeline runs
+      gsap.set(ref.current, { opacity: 0 });
+      ctx.registerSlot(ref.current, order, from);
     }
+    // `from` is defined statically per compound component, safe to omit
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctx, order]);
 
   return (
@@ -94,13 +103,15 @@ function Extra({
   children,
   className,
   order = 3,
+  from = { y: 30, opacity: 0 },
 }: {
   children: ReactNode;
   className?: string;
   order?: number;
+  from?: gsap.TweenVars;
 }) {
   return (
-    <Slot order={order} className={className}>
+    <Slot order={order} from={from} className={className}>
       {children}
     </Slot>
   );
@@ -111,16 +122,20 @@ function Extra({
 export interface HeroRevealProps {
   children: ReactNode;
   className?: string;
-  /** Delay between each slot */
+  /** Delay between each slot (seconds) */
   stagger?: number;
+  /** Animation duration per slot (seconds) */
   duration?: number;
+  /** GSAP ease string */
   ease?: string;
-  /** Initial delay before the timeline starts */
+  /** Initial delay before the timeline starts (seconds) */
   delay?: number;
 }
 
 /**
  * Timeline-based hero entrance. Uses compound components for ordered reveals.
+ * Each sub-component declares its own `from` animation vars, which are
+ * respected by the parent timeline.
  *
  * @example
  * <HeroReveal stagger={0.25}>
@@ -143,53 +158,80 @@ function HeroReveal({
   ease = "power4.out",
   delay = 0.3,
 }: HeroRevealProps) {
-  const slotsRef = useRef<Map<number, HTMLElement>>(new Map());
+  const containerRef = useRef<HTMLDivElement>(null);
+  const slotsRef = useRef<SlotEntry[]>([]);
   const hasAnimated = useRef(false);
 
-  const registerSlot = (el: HTMLElement, order: number) => {
-    slotsRef.current.set(order, el);
-  };
+  const registerSlot = useCallback(
+    (el: HTMLElement, order: number, from: gsap.TweenVars) => {
+      // Avoid duplicates on strict-mode double-mount
+      const exists = slotsRef.current.some((s) => s.el === el);
+      if (!exists) {
+        slotsRef.current.push({ el, order, from });
+      }
+    },
+    [],
+  );
 
-  useEffect(() => {
-    if (hasAnimated.current) return;
+  useLayoutEffect(() => {
+    if (hasAnimated.current || !containerRef.current) return;
 
-    // Small timeout to ensure all slots are registered
-    const timeout = setTimeout(() => {
-      const sortedSlots = [...slotsRef.current.entries()]
-        .sort(([a], [b]) => a - b)
-        .map(([, el]) => el);
+    // Use requestAnimationFrame to ensure all children have registered
+    const rafId = requestAnimationFrame(() => {
+      const sorted = [...slotsRef.current].sort((a, b) => a.order - b.order);
 
-      if (sortedSlots.length === 0) return;
+      if (sorted.length === 0) return;
 
-      const tl = gsap.timeline({ delay });
+      // Wrap everything in gsap.context for proper cleanup
+      const ctx = gsap.context(() => {
+        const tl = gsap.timeline({ delay });
 
-      sortedSlots.forEach((el, i) => {
-        tl.from(
-          el,
-          {
-            y: i === 0 ? 80 : 40,
-            opacity: 0,
-            duration,
-            ease,
-          },
-          i * stagger,
-        );
-      });
+        sorted.forEach((slot, i) => {
+          tl.from(
+            slot.el,
+            {
+              ...slot.from, // Use the actual `from` vars declared per slot
+              duration,
+              ease,
+            },
+            i * stagger,
+          );
+        });
+      }, containerRef);
 
+      // Store ctx for cleanup
+      (
+        containerRef as React.MutableRefObject<HTMLDivElement | null> & {
+          __gsapCtx?: gsap.Context;
+        }
+      ).__gsapCtx = ctx;
       hasAnimated.current = true;
-    }, 50);
+    });
 
-    return () => clearTimeout(timeout);
+    return () => {
+      cancelAnimationFrame(rafId);
+      const stored = (
+        containerRef as React.MutableRefObject<HTMLDivElement | null> & {
+          __gsapCtx?: gsap.Context;
+        }
+      ).__gsapCtx;
+      if (stored) {
+        stored.revert();
+      }
+    };
   }, [stagger, duration, ease, delay]);
 
   return (
     <HeroRevealContext.Provider value={{ registerSlot }}>
-      <div className={className}>{children}</div>
+      <div ref={containerRef} className={className}>
+        {children}
+      </div>
     </HeroRevealContext.Provider>
   );
 }
 
-// Attach compound components
+// ─── Compound Component Typing ─────────────────────────────
+
 HeroReveal.Title = Title;
 HeroReveal.Description = Description;
 HeroReveal.Action = Action;
