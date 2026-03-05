@@ -4,9 +4,28 @@ export const SITE = {
   name: "StudioBina",
   tagline: "Konsultan Arsitektur & Perancang",
   year: 2026,
-  location: "Jakarta, Indonesia",
+  location: "Lombok Timur, Indonesia",
+  address: "Selong, Kabupaten Lombok Timur, Nusa Tenggara Barat",
   phone: "+62 812 3456 7890",
+  email: "hello@studiobina.id",
+  url: "https://konsultan-web-alpiant.vercel.app",
   est: "EST. 2020",
+  keywords: [
+    "Arsitek Lombok Timur",
+    "Konsultan Arsitektur NTB",
+    "Desain Rumah Minimalis Lombok",
+    "Arsitektur Swiss Indonesia",
+    "Jasa DED NTB",
+    "Studio Arsitektur Selong",
+    "Architectural Consultant Lombok",
+  ],
+  image: "/swiss_architecture_hero_1772712304283.png",
+} as const;
+
+export const SOCIAL_LINKS = {
+  instagram: "https://instagram.com/studiobina",
+  behance: "https://behance.net/studiobina",
+  linkedin: "https://linkedin.com/company/studiobina",
 } as const;
 
 export const NAV_LINKS = ["Beranda", "Karya", "Metodologi", "Kontak"] as const;
