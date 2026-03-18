@@ -1,20 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Square, Menu, X } from "lucide-react";
-import { NAV_LINKS } from "@/app/data/site-data";
+import { Square, X, Instagram, Linkedin, Globe } from "lucide-react";
+import { NAV_LINKS, SITE, SOCIALS } from "@/app/data/site-data";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth >= 768) setIsMenuOpen(false);
@@ -23,7 +15,6 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "";
     return () => {
@@ -32,93 +23,106 @@ export default function Navbar() {
   }, [isMenuOpen]);
 
   return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
-        isMenuOpen
-          ? "py-3 sm:py-4 bg-white border-black/5 text-black"
-          : scrolled
-          ? "py-3 sm:py-4 bg-white/80 backdrop-blur-xl border-black/5 text-black"
-          : "py-4 sm:py-8 bg-transparent border-white/10 text-white"
-      }`}
-    >
-      <div className="max-w-[1400px] mx-auto px-5 sm:px-6 flex justify-between items-center">
-        {/* Logo */}
-        <a
-          href="#beranda"
-          className="flex items-center gap-2 group cursor-pointer z-50"
-        >
-          <div
-            className={`w-7 h-7 sm:w-8 sm:h-8 border-2 flex items-center justify-center transition-colors duration-300 group-hover:bg-current ${scrolled ? "border-black" : "border-white"}`}
-          >
-            <Square
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:text-current group-hover:invert-[1] transition-all`}
-            />
-          </div>
-          <span className="font-black text-lg sm:text-xl tracking-tighter uppercase leading-none">
-            Studio<span className="font-light opacity-50">Bina</span>
-          </span>
-        </a>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8 lg:gap-12 font-medium text-xs uppercase tracking-widest">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
-              className="hover:opacity-40 transition-opacity"
-            >
-              {link}
-            </a>
-          ))}
+    <>
+      <nav className="fixed top-0 w-full z-[70] py-4 sm:py-6 bg-black/60 backdrop-blur-xl border-b border-white/10 text-white shadow-2xl">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 flex justify-between items-center">
           <a
-            href="#kontak"
-            className="px-5 lg:px-6 py-3 border border-black/10 hover:border-black transition-colors"
+            href="#beranda"
+            className="flex items-center gap-3 group cursor-pointer"
+            onClick={() => setIsMenuOpen(false)}
           >
-            Konsultasi
+            <div className="w-8 h-8 sm:w-9 sm:h-9 border-2 border-white flex items-center justify-center transition-all group-hover:bg-white">
+              <Square className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-all group-hover:text-black" fill="currentColor" />
+            </div>
+            <span className="font-black text-xl sm:text-2xl tracking-tighter uppercase leading-none">
+              Studio<span className="font-light opacity-60">Bina</span>
+            </span>
           </a>
+
+          <div className="hidden md:flex items-center gap-10 lg:gap-14 font-bold text-[10px] uppercase tracking-[0.2em]">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link}
+                href={`#${link.toLowerCase()}`}
+                className="relative py-2 group overflow-hidden"
+              >
+                <span className="block transition-transform duration-300 group-hover:-translate-y-full">
+                  {link}
+                </span>
+                <span className="absolute top-0 left-0 block transition-transform duration-300 translate-y-full group-hover:translate-y-0 text-white/50">
+                  {link}
+                </span>
+              </a>
+            ))}
+            <a
+              href="#kontak"
+              className="px-7 py-3.5 border-2 border-white bg-white text-black hover:bg-transparent hover:text-white transition-all duration-300 font-black tracking-widest"
+            >
+              Mulai Proyek
+            </a>
+          </div>
+
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden w-12 h-12 flex items-center justify-center text-white active:scale-90"
+            aria-label={isMenuOpen ? "Tutup menu" : "Buka menu"}
+          >
+            {isMenuOpen ? (
+              <X className="w-8 h-8" />
+            ) : (
+              <div className="flex flex-col gap-1.5 items-end group">
+                <span className="h-0.5 w-8 bg-current transition-all duration-300" />
+                <span className="h-0.5 w-5 bg-current group-hover:w-8 transition-all duration-300" />
+              </div>
+            )}
+          </button>
         </div>
+      </nav>
 
-        {/* Mobile Toggle */}
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="md:hidden z-[60] w-10 h-10 flex items-center justify-center absolute right-5 sm:right-6 top-1/2 -translate-y-1/2"
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? (
-            <X className="w-6 h-6 text-black" />
-          ) : (
-            <Menu className={`w-6 h-6 ${scrolled ? "text-black" : "text-white"}`} />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile Fullscreen Menu */}
       <div
-        className={`fixed inset-0 bg-white z-40 flex flex-col items-center justify-center gap-8 transition-all duration-500 md:hidden ${
-          isMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 bg-white z-[60] transform transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] md:hidden will-change-transform ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {NAV_LINKS.map((link, i) => (
-          <a
-            key={link}
-            href={`#${link.toLowerCase()}`}
-            onClick={() => setIsMenuOpen(false)}
-            className="text-3xl font-black uppercase tracking-tighter hover:opacity-40 transition-all"
-            style={{ transitionDelay: isMenuOpen ? `${i * 75}ms` : "0ms" }}
-          >
-            {link}
-          </a>
-        ))}
-        <a
-          href="#kontak"
-          onClick={() => setIsMenuOpen(false)}
-          className="mt-4 px-10 py-4 border-2 border-black text-sm font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all"
-        >
-          Konsultasi
-        </a>
+        <div className="flex flex-col h-full p-8 pt-32">
+          <div className="flex flex-col gap-8">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link}
+                href={`#${link.toLowerCase()}`}
+                onClick={() => setIsMenuOpen(false)}
+                className="text-4xl font-black uppercase tracking-tighter hover:text-neutral-500 transition-colors"
+              >
+                {link}
+              </a>
+            ))}
+            <a
+              href="#kontak"
+              onClick={() => setIsMenuOpen(false)}
+              className="mt-4 inline-block px-8 py-5 bg-black text-white text-[11px] font-black uppercase tracking-[0.2em] text-center"
+            >
+              Mulai Proyek Sekarang
+            </a>
+          </div>
+
+          <div className="mt-auto border-t border-neutral-100 pt-10 flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Hubungi Kami</span>
+              <a href={`mailto:${SITE.email}`} className="text-base font-bold tracking-tight">{SITE.email}</a>
+              <a href={`tel:${SITE.phone}`} className="text-sm font-medium opacity-50">{SITE.phone}</a>
+            </div>
+            <div className="flex gap-6">
+              {SOCIALS.map((social) => (
+                <a key={social.label} href={social.href} className="text-neutral-400 hover:text-black transition-colors">
+                  {social.label === "Instagram" && <Instagram size={22} />}
+                  {social.label === "LinkedIn" && <Linkedin size={22} />}
+                  {social.label === "Behance" && <Globe size={22} />}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-    </nav>
+    </>
   );
 }
