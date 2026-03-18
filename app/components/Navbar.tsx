@@ -34,7 +34,9 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
-        scrolled
+        isMenuOpen
+          ? "py-3 sm:py-4 bg-white border-black/5 text-black"
+          : scrolled
           ? "py-3 sm:py-4 bg-white/80 backdrop-blur-xl border-black/5 text-black"
           : "py-4 sm:py-8 bg-transparent border-white/10 text-white"
       }`}
@@ -79,13 +81,13 @@ export default function Navbar() {
         {/* Mobile Toggle */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="md:hidden z-50 w-10 h-10 flex items-center justify-center"
+          className="md:hidden z-[60] w-10 h-10 flex items-center justify-center absolute right-5 sm:right-6 top-1/2 -translate-y-1/2"
           aria-label="Toggle menu"
         >
           {isMenuOpen ? (
-            <X className="w-6 h-6" />
+            <X className="w-6 h-6 text-black" />
           ) : (
-            <Menu className="w-6 h-6" />
+            <Menu className={`w-6 h-6 ${scrolled ? "text-black" : "text-white"}`} />
           )}
         </button>
       </div>
