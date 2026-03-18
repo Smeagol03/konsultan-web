@@ -59,7 +59,7 @@ const AnimateIcon = () => {
         </div>
 
         {/* Right Content - Encapsulated Building Animation Component */}
-        <div className="lg:col-span-7 flex items-end justify-center lg:justify-end lg:scale-110 origin-bottom lg:origin-bottom-right mt-12 lg:mt-0">
+        <div className="lg:col-span-7 flex items-end justify-center lg:justify-end lg:scale-110 origin-bottom lg:origin-bottom-right mt-8 sm:mt-10 lg:mt-0">
           <BuildingAnimation
             containerRef={containerRef}
             onProgress={setProgress}
