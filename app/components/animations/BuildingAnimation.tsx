@@ -113,8 +113,8 @@ export default function BuildingAnimation({
     <svg
       ref={svgRef}
       viewBox="0 0 400 520"
-      className="w-full h-auto max-w-[700px]"
-      preserveAspectRatio="xMidYMax meet"
+      className="w-full h-auto max-w-[280px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]"
+      preserveAspectRatio="xMidYMin meet"
     >
       {/* ===== Blueprint Grid Lines ===== */}
       <g stroke="rgba(255,255,255,0.04)" strokeWidth="0.5">
