@@ -46,10 +46,10 @@ export default function Navbar() {
                 href={`#${link.toLowerCase()}`}
                 className="relative py-2 group overflow-hidden"
               >
-                <span className="block transition-transform duration-300 group-hover:-translate-y-full">
+                <span className="block transition-all duration-300 group-hover:opacity-0">
                   {link}
                 </span>
-                <span className="absolute top-0 left-0 block transition-transform duration-300 translate-y-full group-hover:translate-y-0 text-white/50">
+                <span className="absolute top-0 left-0 block transition-all duration-300 opacity-0 group-hover:opacity-50">
                   {link}
                 </span>
               </a>

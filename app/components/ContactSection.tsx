@@ -45,8 +45,8 @@ export default function ContactSection() {
                 </label>
                 <input
                   type="text"
-                  placeholder="E.G. ANDRE SANTOSO"
-                  className="w-full bg-transparent border-b border-white/20 py-3 sm:py-4 focus:outline-none focus:border-white transition-colors uppercase font-bold tracking-tighter text-lg sm:text-2xl placeholder:opacity-10"
+                  placeholder="NAMA ATAU PERUSAHAAN ANDA"
+                  className="w-full bg-transparent border-b border-white/20 py-3 sm:py-4 focus:outline-none focus:border-white transition-colors uppercase font-bold tracking-tighter text-lg sm:text-2xl placeholder:opacity-45"
                 />
               </div>
 
@@ -83,7 +83,7 @@ export default function ContactSection() {
                 <textarea
                   rows={2}
                   placeholder="CERITAKAN GAGASAN ANDA..."
-                  className="w-full bg-transparent border-b border-white/20 py-3 sm:py-4 focus:outline-none focus:border-white transition-colors uppercase font-bold tracking-tighter text-lg sm:text-2xl placeholder:opacity-10 resize-none min-h-[80px]"
+                  className="w-full bg-transparent border-b border-white/20 py-3 sm:py-4 focus:outline-none focus:border-white transition-colors uppercase font-bold tracking-tighter text-lg sm:text-2xl placeholder:opacity-45 resize-none min-h-[80px]"
                 />
               </div>
 
